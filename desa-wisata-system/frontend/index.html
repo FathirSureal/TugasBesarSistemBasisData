@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desa Wisata Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Page -->
+        <div id="login-page" class="page">
+            <div class="login-container">
+                <h1><i class="fas fa-mountain-sun"></i> Desa Wisata System</h1>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <div class="role-selection">
+                        <label>Login sebagai:</label>
+                        <div class="role-options">
+                            <label><input type="radio" name="role" value="admin" checked> Admin</label>
+                            <label><input type="radio" name="role" value="finance"> Finance</label>
+                            <label><input type="radio" name="role" value="staff"> Staff</label>
+                            <label><input type="radio" name="role" value="receptionist"> Receptionist</label>
+                        </div>
+                    </div>
+                    <button type="submit">Login</button>
+                    <p class="demo-info">
+                        <strong>Demo Accounts:</strong><br>
+                        Admin: admin / admin123<br>
+                        Finance: finance / finance123<br>
+                        Staff: staff / staff123<br>
+                        Receptionist: reception / reception123
+                    </p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page" style="display: none;">
+            <nav class="navbar">
+                <div class="nav-brand">
+                    <i class="fas fa-mountain-sun"></i> Desa Wisata
+                </div>
+                <div class="nav-user">
+                    <span id="current-user">User</span>
+                    <button onclick="logout()">Logout</button>
+                </div>
+            </nav>
+
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h3>Menu</h3>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="#" onclick="showDashboard()"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li id="menu-reservations" style="display: none;"><a href="#" onclick="showReservations()"><i class="fas fa-calendar-check"></i> Reservasi</a></li>
+                    <li id="menu-pengunjung" style="display: none;"><a href="#" onclick="showPengunjung()"><i class="fas fa-users"></i> Pengunjung</a></li>
+                    <li id="menu-events" style="display: none;"><a href="#" onclick="showEvents()"><i class="fas fa-hotel"></i> Homestay & Event</a></li>
+                    <li id="menu-payments" style="display: none;"><a href="#" onclick="showPayments()"><i class="fas fa-credit-card"></i> Pembayaran</a></li>
+                    <li id="menu-stats" style="display: none;"><a href="#" onclick="showStats()"><i class="fas fa-chart-bar"></i> Query Stats</a></li>
+                    <li id="menu-stress-test" style="display: none;"><a href="#" onclick="showStressTest()"><i class="fas fa-server"></i> Stress Test</a></li>
+                </ul>
+            </div>
+
+            <div class="main-content">
+                <div id="dashboard-content">
+                    <h1>Selamat Datang di Sistem Desa Wisata</h1>
+                    <div class="role-info" id="role-info"></div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fas fa-users"></i>
+                            <h3>Total Pengunjung</h3>
+                            <p id="total-pengunjung">Loading...</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-calendar-check"></i>
+                            <h3>Total Reservasi</h3>
+                            <p id="total-reservasi">Loading...</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-hotel"></i>
+                            <h3>Homestay & Event</h3>
+                            <p id="total-homestay">Loading...</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-credit-card"></i>
+                            <h3>Total Pembayaran</h3>
+                            <p id="total-pembayaran">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reservasi Page -->
+                <div id="reservasi-content" style="display: none;">
+                    <h1>Data Reservasi</h1>
+                    <div class="controls">
+                        <input type="text" id="search-reservasi" placeholder="Cari nama pengunjung...">
+                        <button onclick="loadReservations()">Cari</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="reservasi-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Pengunjung</th>
+                                    <th>Homestay/Event</th>
+                                    <th>Tanggal Mulai</th>
+                                    <th>Tanggal Selesai</th>
+                                    <th>Total Harga</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="pagination"></div>
+                </div>
+
+                <!-- Pengunjung Page -->
+                <div id="pengunjung-content" style="display: none;">
+                    <h1>Data Pengunjung</h1>
+                    <table id="pengunjung-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nama Lengkap</th>
+                                <th>Negara Asal</th>
+                                <th>Email</th>
+                                <th>Nomor HP</th>
+                                <th>Tanggal Daftar</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- Events Page -->
+                <div id="events-content" style="display: none;">
+                    <h1>Homestay & Event</h1>
+                    <table id="events-table">
+                        <thead>
+                            <tr>
+                                <th>Nama</th>
+                                <th>Lokasi</th>
+                                <th>Jenis Tiket</th>
+                                <th>Kategori Kamar</th>
+                                <th>Harga Per Malam</th>
+                                <th>Harga Tiket Event</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- Payments Page -->
+                <div id="payments-content" style="display: none;">
+                    <h1>Data Pembayaran</h1>
+                    <table id="payments-table">
+                        <thead>
+                            <tr>
+                                <th>ID Pembayaran</th>
+                                <th>ID Reservasi</th>
+                                <th>Tanggal Bayar</th>
+                                <th>Jumlah Bayar</th>
+                                <th>Metode Pembayaran</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- Query Stats Page -->
+                <div id="stats-content" style="display: none;">
+                    <h1>Query Performance Statistics</h1>
+                    <div id="stats-container"></div>
+                </div>
+
+                <!-- Stress Test Page -->
+                <div id="stress-test-content" style="display: none;">
+                    <h1>Database Stress Test</h1>
+                    <div class="test-controls">
+                        <button onclick="runStressTest()" class="btn-danger">
+                            <i class="fas fa-bolt"></i> Jalankan Stress Test (Tanpa Pagination)
+                        </button>
+                        <p class="warning">⚠️ Warning: Ini akan memuat SEMUA data reservasi (500k+ records)</p>
+                    </div>
+                    <div id="stress-test-result"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
