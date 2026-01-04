@@ -1,60 +1,45 @@
-const API_URL = 'http://localhost:3001/api';
-let currentUser = null;
-let currentPage = 1;
-let currentLimit = 10;
-
-document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('login-form');
-    loginForm.addEventListener('submit', handleLogin);
-    
-    // Cek token di localStorage
-    const token = localStorage.getItem('token');
-    if (token) {
-        // Verifikasi token masih valid
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            if (payload.exp * 1000 > Date.now()) {
-                currentUser = {
-                    username: payload.username,
-                    role: payload.role
-                };
-                showDashboard();
-            }
-        } catch (e) {
-            localStorage.removeItem('token');
-        }
-    }
-});
+const API_URL = window.location.origin.includes('localhost') 
+  ? 'http://localhost:3000/api' 
+  : window.location.origin + '/api';
 
 async function handleLogin(e) {
-    e.preventDefault();
+  e.preventDefault();
+  
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  
+  try {
+    const response = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ username, password })
+    });
     
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const role = document.querySelector('input[name="role"]:checked').value;
+    // Log response untuk debugging
+    console.log('Login response:', response);
     
-    try {
-        const response = await fetch(`${API_URL}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-            alert(data.error || 'Login gagal');
-            return;
-        }
-        
-        // Simpan token
-        localStorage.setItem('token', data.token);
-        currentUser = data.user;
-        
-        showDashboard();
-    } catch (error) {
-        alert('Error: ' + error.message);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Login error:', errorText);
+      alert(`Login gagal: ${errorText}`);
+      return;
     }
+    
+    const data = await response.json();
+    console.log('Login success:', data);
+    
+    // Simpan token
+    localStorage.setItem('token', data.token);
+    currentUser = data.user;
+    
+    showDashboard();
+  } catch (error) {
+    console.error('Network error:', error);
+    alert('Error koneksi: ' + error.message);
+  }
 }
 
 function showDashboard() {
